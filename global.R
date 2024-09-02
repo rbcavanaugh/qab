@@ -4,16 +4,6 @@ clean_qab_sheet <- function(path, filename){
   result_list <- lapply(1:3, function(i) clean_qab_macro(path = path, filename = filename, sheet_n = i))
   return(result_list)
 }
-# 
-
-  # test = clean_qab_sheet("~/Desktop/UNR03PTG_QAB.xls", filename = "UNR03.xls")
-  # test2 = do.call("rbind", test)
-  # do.call("rbind",clean_qab_sheet("~/Desktop/UNR03PTG_QAB.xls", filename = "UNR03.xls"))
-# 
-# files = c("~/Desktop/UNR03PTG_QAB.xls", "~/Desktop/UNR05PTG_QAB.xls")
-# filenames = c("p1", "p2")
-# test = Map(clean_qab_sheet, files, filenames)
-# test2 = do.call("rbind", lapply(1:length(files), function(i) do.call("rbind", test[[i]])))
 
 clean_qab_macro <- function(path, filename, sheet_n){
   
@@ -106,23 +96,3 @@ clean_qab_macro <- function(path, filename, sheet_n){
     
   
 }
-
-# # clean 1 file
-# file = "path_to_file.xlsx"
-# clean_qab_macro(file)
-# 
-# # clean multiple files
-# files = list.files("path_to_directory")
-# df = do.call("rbind", lapply(files, clean_qab_macro))
-# 
-# clean_qab_macro(file2, file2name)
-# 
-# file1 = "~/Desktop/UNR03PTG_QAB.xls"
-# file1name = "file1"
-# 
-# file2 = "~/Desktop/UNR05PTG_QAB.xls"
-# file2name = "file5"
-# 
-#test = do.call("rbind", Map(clean_qab_macro, c(file1, file2), c(file1name, file2name)))
-
-    
