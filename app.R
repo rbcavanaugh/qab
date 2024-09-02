@@ -27,6 +27,13 @@ ui <- fluidPage(
     
     sidebarLayout(
       sidebarPanel(
+        div(
+          h4("Upload one or more QAB Macro files"), br(),
+          p("- Do not make any changes to the files other than entering scores in the correct boxes"),
+          p("- You must fill out the `Participant` field for each form completed, otherwise scores will be ignored"),
+          p("- Forms not completed will have a single row in the data with NA values"),
+          p("- The cleaned data will be in long format, with one row per question scored")
+        ),br(),
         fileInput("file1", "Choose a file",
                   #accept = c(".xlsx", "xls"),
                   multiple = TRUE),
@@ -36,7 +43,7 @@ ui <- fluidPage(
         ),
       mainPanel(
         div(style = "overflow-y: auto;height: 50vh; max-height: 50vh; width: 100%;",
-          tableOutput("contents")
+          uiOutput("results")
         )
         
       )
@@ -57,7 +64,7 @@ server <- function(input, output) {
     files = file$datapath
     filenames = c(file$name)
     #print(files)
-    print(filenames)
+    #print(filenames)
    # print(file)
     
 
@@ -65,7 +72,8 @@ server <- function(input, output) {
       df <- tryCatch(
         {
           #do.call("rbind", Map(clean_qab_macro, files, filenames))
-          do.call("rbind", Map(clean_qab_macro, files, filenames))
+          #do.call("rbind", Map(clean_qab_sheet, files, filenames))
+          do.call("rbind", lapply(1:length(files), function(i) do.call("rbind", Map(clean_qab_sheet, files, filenames)[[i]])))
           
         },
         error = function(e) {
@@ -81,7 +89,11 @@ server <- function(input, output) {
           return(
             
             #do.call("rbind", lapply(c(files), clean_qab_macro))
-            do.call("rbind", Map(clean_qab_macro, files, filenames))
+            suppressWarnings(
+              suppressMessages(
+                do.call("rbind", lapply(1:length(files), function(i) do.call("rbind", Map(clean_qab_sheet, files, filenames)[[i]])))
+              )
+            )
             
             
             )
@@ -95,7 +107,7 @@ server <- function(input, output) {
 
       df <- tryCatch(
         {
-          clean_qab_macro(files, filenames)
+          do.call("rbind",clean_qab_sheet(files, filenames))
         },
         error = function(e) {
           # Handle the error
@@ -106,7 +118,14 @@ server <- function(input, output) {
         warning = function(w) {
           # Handle warnings if needed
           showNotification(paste0("Missing data were found: ", w$message), type = "error")
-          return(clean_qab_macro(files, filenames))
+          return(
+            suppressWarnings(
+              suppressMessages(
+              #  clean_qab_sheet(files, filenames))
+              do.call("rbind",clean_qab_sheet(files, filenames))
+              )
+            )
+          )
           # Return the result or take appropriate action
         },
         finally = {
@@ -122,13 +141,22 @@ server <- function(input, output) {
     qab_data$data
   })
   
+  
+  output$results <- renderUI({
+    if(is.null(qab_data$data)){
+      h3("Upload QAB Macro file(s) to preview cleaned data.")
+    } else {
+      tableOutput("contents")
+    }
+  })
+  
   output$downloadButtonUI <- renderUI({
     if (!is.null(qab_data$data)) {
       div(
         downloadButton("downloadData", "Download Processed Data"),
         actionButton("reset", "Reset")
       )
-    }
+    } 
   })
   
   observeEvent(input$reset, {
