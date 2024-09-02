@@ -9,6 +9,7 @@
 
 library(shiny)
 library(readxl)
+library(bslib)
 
 source("global.R")
 
@@ -20,33 +21,27 @@ downloadButton <- function(...) {
 }
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- page_navbar(title = "QAB Macro Parser",
 
-    # Application title
-    titlePanel("QAB Macro Parser"),
-    
-    sidebarLayout(
-      sidebarPanel(
-        div(
-          h4("Upload one or more QAB Macro files"), br(),
-          p("- Do not make any changes to the files other than entering scores in the correct boxes"),
-          p("- You must fill out the `Participant` field for each form completed, otherwise scores will be ignored"),
-          p("- Forms not completed will have a single row in the data with NA values"),
-          p("- The cleaned data will be in long format, with one row per question scored")
-        ),br(),
-        fileInput("file1", "Choose a file",
-                  #accept = c(".xlsx", "xls"),
-                  multiple = TRUE),
-        uiOutput("downloadButtonUI")
-        
-        # downloadButton("downloadData", "Download Result")
-        ),
-      mainPanel(
-        div(style = "overflow-y: auto;height: 50vh; max-height: 50vh; width: 100%;",
-          uiOutput("results")
+      nav_panel_hidden(value = "t",
+        layout_sidebar(
+          fillable = TRUE,
+          sidebar = sidebar(width = "30%",
+            div(
+              fileInput("file1", "Upload QAB Macro file(s)",
+                        #accept = c(".xlsx", "xls"),
+                        multiple = TRUE),
+              p("- Do not make any changes to the files other than entering scores in the correct boxes"),
+              p("- You must fill out the `Participant` field for each form completed, otherwise scores for that form will be ignored"),
+              p("- Empty forms will have a single row in the data with NA values"),
+              p("- The cleaned data will be in long format, with one row per question scored")
+            ),
+            uiOutput("downloadButtonUI")
+          ),
+          div(style = "overflow-y: auto;height: 50vh; max-height: 50vh; width: 100%;",
+              uiOutput("results")
+          )
         )
-        
-      )
     )
 
     # file input for directory or excel file
@@ -146,9 +141,9 @@ server <- function(input, output) {
     if(is.null(qab_data$data)){
       div(
         h3("Upload QAB Macro file(s) to preview cleaned data."), br(),
-        p("Note: This web-app does not permanently store any data: it is only stored in your browser while the app is open."),
+        p("Note: This web-app does not save or store any data: it is only available in your browser while the app is open."),
         p("If you have concerns about security/privacy, you can clone the repository and run the shiny app locally on your computer"),
-        p("The source code is located at:", tags$a("https://github.com/rbcavanaugh/qab"))
+        p("The source code is located at:", tags$link("https://github.com/rbcavanaugh/qab"))
       )
     } else {
       tableOutput("contents")
@@ -157,8 +152,8 @@ server <- function(input, output) {
   
   output$downloadButtonUI <- renderUI({
     if (!is.null(qab_data$data)) {
-      div(
-        downloadButton("downloadData", "Download Processed Data"),
+      div(align = "center",
+        downloadButton("downloadData", "Download"),br(),br(),
         actionButton("reset", "Reset")
       )
     } 
