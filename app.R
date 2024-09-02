@@ -141,7 +141,8 @@ server <- function(input, output) {
     if(is.null(qab_data$data)){
       div(
         h3("Upload QAB Macro file(s) to preview cleaned data."), br(),
-        p("Note: This web-app does not save or store any data: it is only available in your browser while the app is open."),
+        p("This web app parses QAB Excel Macro files from https://aphasialab.org/qab/ and returns a cleaned data frame in long format."),
+        p("It does not save or store any data: it is only available in your browser while the app is open."),
         p("If you have concerns about security/privacy, you can clone the repository and run the shiny app locally on your computer"),
         p("The source code is located at:", tags$link("https://github.com/rbcavanaugh/qab"))
       )
