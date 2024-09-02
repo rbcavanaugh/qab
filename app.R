@@ -144,7 +144,12 @@ server <- function(input, output) {
   
   output$results <- renderUI({
     if(is.null(qab_data$data)){
-      h3("Upload QAB Macro file(s) to preview cleaned data.")
+      div(
+        h3("Upload QAB Macro file(s) to preview cleaned data."), br(),
+        p("Note: This web-app does not permanently store any data: it is only stored in your browser while the app is open."),
+        p("If you have concerns about security/privacy, you can clone the repository and run the shiny app locally on your computer"),
+        p("The source code is located at:", tags$a("https://github.com/rbcavanaugh/qab"))
+      )
     } else {
       tableOutput("contents")
     }
