@@ -80,7 +80,8 @@ clean_qab_macro <- function(path, filename, sheet_n){
     score = as.numeric(macro[29:36,9][[1]])
   )
   
-  df = do.call("rbind", mget(ls()[!ls() %in% c("macro", "test_details_column", "path", "clean_qab_macro", "file")]))
+  df = do.call("rbind", mget(ls()[!ls() %in% c("macro", "test_details_column", "path",
+                                               "clean_qab_macro", "file", "participant_qab", "filename" )]))
   
   df$form_qab = as.character(macro[[1,1]])
   df$participant_qab = as.character(macro[[3,test_details_column]])
